@@ -16,7 +16,6 @@ const CreateCourse = () => {
   const [terms, setTerms] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
 
-  // 获取学期选项
   useEffect(() => {
     fetch('/api/terms')
       .then((response) => response.json())
@@ -24,13 +23,11 @@ const CreateCourse = () => {
       .catch((error) => console.error('Error fetching terms:', error));
   }, []);
 
-  // 更新表单字段
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCourseData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 提交表单
   const handleSubmit = (e) => {
     e.preventDefault();
     fetch('/api/courses', {

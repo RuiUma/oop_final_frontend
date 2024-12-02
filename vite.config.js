@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // Proxying requests starting with /api to the backend server
       '/api': {
-        target: 'http://localhost', // Replace with your backend server URL
+        target: 'http://localhost:8080/oop_final_backend_war_exploded', // Replace with your backend server URL
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

@@ -1,15 +1,27 @@
 import React, { useState } from 'react';
+import { restfulPost } from '../request/request';
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [userType, setUserType] = useState('Professional'); // Default to Professional
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+
+  const handleRegister = async (e) => {
     e.preventDefault();
     console.log({ userType, email, name, password });
-    // Add registration logic here
+    const response = await restfulPost('/register', { userType, name, email, password })
+    const res = await response.json()
+    if(res.success == true) {
+      console.log(res);
+      
+      navigate("/login")
+    } else {
+      alert(res.errmsg)
+    }
   };
 
   return (
@@ -38,7 +50,6 @@ const Register = () => {
             Email
           </label>
           <input
-            type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

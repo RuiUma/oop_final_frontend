@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
+import { restfulPost } from '../request/request';
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     console.log({ email, password });
     // Add authentication logic here
+    const response = await restfulPost('/login', { email, password })
+    const res = await response.json()
+    if(res.data.userType == "Professional") {
+      navigate("/professional/dashboard")
+    } else {
+      navigate("/institution/dashboard")
+    }
   };
 
   return (
@@ -22,7 +33,6 @@ const Login = () => {
             Email
           </label>
           <input
-            type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
