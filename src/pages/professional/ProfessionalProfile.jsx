@@ -1,18 +1,38 @@
 import React, { useState, useEffect } from 'react';
 
+import { restfulPut, restfulGet } from '../../request/request';
+
 const ProfessionalProfile = () => {
   const [profile, setProfile] = useState({
-    CurrentPosition: '',
-    EducationBackground: '',
-    AreaOfExpertise: '',
+    currentPosition: '',
+    educationBackground: '',
+    areaOfExpertise: '',
   });
   const [updateStatus, setUpdateStatus] = useState('');
 
-  useEffect(() => {
-    fetch('/api/professional/profile')
-      .then((response) => response.json())
-      .then((data) => setProfile(data))
-      .catch((error) => console.error('Error fetching profile:', error));
+  useEffect( () => {
+
+    const fetchData = async () => {
+        try {
+            const response = await restfulGet('/profile');
+            const res = await response.json();
+            console.log(res);
+            
+            if (res.code === 0) {
+                res.data.currentPosition = res.data.currentPosition == null ? "" : res.data.currentPosition;
+                res.data.educationBackground = res.data.educationBackground == null ? "" : res.data.educationBackground;
+                res.data.areaOfExpertise = res.data.areaOfExpertise == null ? "" : res.data.areaOfExpertise;
+
+                setProfile(res.data);
+            }
+        } catch (error) {
+            console.error('Error fetching profile data:', error);
+        }
+    };
+
+    fetchData();
+
+      
   }, []);
 
   const handleInputChange = (e) => {
@@ -20,20 +40,10 @@ const ProfessionalProfile = () => {
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdate = () => {
-    fetch('/api/professional/profile', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(profile),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setUpdateStatus('Profile updated successfully!');
-        } else {
-          setUpdateStatus('Failed to update profile.');
-        }
-      })
-      .catch((error) => console.error('Error updating profile:', error));
+  const handleUpdate = async () => {
+    console.log(profile);
+    setUpdateStatus("Update Successful")
+    
   };
 
   return (
@@ -47,8 +57,8 @@ const ProfessionalProfile = () => {
           <input
             type="text"
             id="currentPosition"
-            name="CurrentPosition"
-            value={profile.CurrentPosition}
+            name="currentPosition"
+            value={profile.currentPosition}
             onChange={handleInputChange}
             className="border p-2 rounded w-full"
           />
@@ -59,8 +69,8 @@ const ProfessionalProfile = () => {
           </label>
           <textarea
             id="educationBackground"
-            name="EducationBackground"
-            value={profile.EducationBackground}
+            name="educationBackground"
+            value={profile.educationBackground}
             onChange={handleInputChange}
             className="border p-2 rounded w-full"
           />
@@ -71,8 +81,8 @@ const ProfessionalProfile = () => {
           </label>
           <textarea
             id="areaOfExpertise"
-            name="AreaOfExpertise"
-            value={profile.AreaOfExpertise}
+            name="areaOfExpertise"
+            value={profile.areaOfExpertise}
             onChange={handleInputChange}
             className="border p-2 rounded w-full"
           />

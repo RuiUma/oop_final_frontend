@@ -8,9 +8,22 @@ const restfulPost = async (url, data) => {
     })
 };
 
-const restfulGet = async (url) => {
-    return fetch(url)
+const restfulGet = (url) => {
+    console.log(url);
     
+    return fetch('http://localhost:5173/api/' + url, {
+        method: 'GET',
+    })
 };
 
-export {restfulGet, restfulPost}
+const restfulPut = async (url, data) => {
+    return fetch('api/' + url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+};
+
+export {restfulGet, restfulPost, restfulPut}

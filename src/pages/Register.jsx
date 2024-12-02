@@ -20,7 +20,7 @@ const Register = () => {
       
       navigate("/login")
     } else {
-      alert(res.errmsg)
+      alert(res.errMsg)
     }
   };
 
