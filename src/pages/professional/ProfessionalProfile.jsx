@@ -7,6 +7,7 @@ const ProfessionalProfile = () => {
     currentPosition: '',
     educationBackground: '',
     areaOfExpertise: '',
+    institutionName: ''
   });
   const [updateStatus, setUpdateStatus] = useState('');
 
@@ -19,11 +20,14 @@ const ProfessionalProfile = () => {
             console.log(res);
             
             if (res.code === 0) {
-                res.data.currentPosition = res.data.currentPosition == null ? "" : res.data.currentPosition;
-                res.data.educationBackground = res.data.educationBackground == null ? "" : res.data.educationBackground;
-                res.data.areaOfExpertise = res.data.areaOfExpertise == null ? "" : res.data.areaOfExpertise;
+              const profileObj = {
+                currentPosition: res.data.currentPosition == null ? "" : res.data.currentPosition,
+                educationBackground: res.data.educationBackground == null ? "" : res.data.educationBackground,
+                areaOfExpertise: res.data.areaOfExpertise == null ? "" : res.data.areaOfExpertise,
+                institutionName: res.data.institutionName == null ? "" : res.data.institutionName
+              }
 
-                setProfile(res.data);
+                setProfile(profileObj);
             }
         } catch (error) {
             console.error('Error fetching profile data:', error);
@@ -87,6 +91,20 @@ const ProfessionalProfile = () => {
             className="border p-2 rounded w-full"
           />
         </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="institutionName">
+            Institution Name
+          </label>
+          <textarea
+            id="institutionName"
+            name="institutionName"
+            value={profile.institutionName}
+            onChange={handleInputChange}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
         <button
           onClick={handleUpdate}
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
