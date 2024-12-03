@@ -1,40 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { restfulGet, restfulPut } from '../../request/request';
 
 const ProfessionalNotification = () => {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
 
+  const fetchNotifications = async () => {
+    restfulGet('/notification')
+  };
   useEffect(() => {
-    const fetchNotifications = () => {
-      fetch('/api/professional/notifications')
-        .then((response) => response.json())
-        .then((data) => setNotifications(data))
-        .catch((error) => console.error('Error fetching notifications:', error));
-    };
-
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 10000);
-
     return () => clearInterval(interval);
   }, []);
 
-  const handleNotificationClick = (notification) => {
-    if (notification.CourseID) {
-      navigate(`/professional/courses/${notification.CourseID}`);
-    }
-  };
-
-  const markAsRead = (notificationId) => {
-    fetch(`/api/professional/notifications/${notificationId}/read`, {
-      method: 'POST',
-    })
-      .then(() => {
-        setNotifications((prev) =>
-          prev.filter((notification) => notification.NotificationID !== notificationId)
-        );
-      })
-      .catch((error) => console.error('Error marking notification as read:', error));
+  const markAsRead = async (notificationId) => {
+    await restfulPut('/notification', { notificationId })
+    fetchNotifications();
   };
 
   return (
@@ -47,17 +30,16 @@ const ProfessionalNotification = () => {
           <ul>
             {notifications.map((notification) => (
               <li
-                key={notification.NotificationID}
+                key={notification.notificationID}
                 className="flex justify-between items-center p-2 border-b"
               >
                 <span
-                  onClick={() => handleNotificationClick(notification)}
                   className="cursor-pointer hover:text-blue-500"
                 >
-                  {notification.Message}
+                  {notification.message}
                 </span>
                 <button
-                  onClick={() => markAsRead(notification.NotificationID)}
+                  onClick={() => markAsRead(notification.notificationID)}
                   className="bg-gray-200 text-sm px-2 py-1 rounded hover:bg-gray-300"
                 >
                   Mark as Read
@@ -67,6 +49,12 @@ const ProfessionalNotification = () => {
           </ul>
         )}
       </div>
+      <button
+        onClick={() => navigate(-1)}
+        className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+      >
+        Back
+      </button>
     </div>
   );
 };
