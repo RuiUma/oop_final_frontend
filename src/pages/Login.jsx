@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
-import { restfulPost } from '../request/request';
+import React, { useState, useEffect } from 'react';
+import { restfulGet } from '../request/request';
 import { useNavigate } from "react-router-dom";
+import { restfulPost } from '../request/request';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    const getGeneralData = async () => {
+      const response = await restfulGet('/getGeneralData');
+      const res = await response.json();
+      console.log(res);
+      if (res.code === 0) {
+        localStorage.setItem('institutionOptions', JSON.stringify(res.data.institutionOptions));
+        localStorage.setItem('termOptions', JSON.stringify(res.data.termOptions));
+      }
+    }
+
+    getGeneralData()
+    
+  }, []);
 
 
   const handleLogin = async (e) => {

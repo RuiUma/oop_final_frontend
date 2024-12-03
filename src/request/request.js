@@ -8,10 +8,12 @@ const restfulPost = async (url, data) => {
     })
 };
 
-const restfulGet = (url) => {
-    console.log(url);
+const restfulGet = (url, data) => {
+    if (data) {
+        url += '?' + new URLSearchParams(data).toString();
+    }
     
-    return fetch('http://localhost:5173/api/' + url, {
+    return fetch('http://localhost:5173/api' + url, {
         method: 'GET',
     })
 };

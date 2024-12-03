@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { restfulGet } from '../../request/request';
 
 const ProfessionalDashboard = () => {
   const navigate = useNavigate();
@@ -8,22 +9,35 @@ const ProfessionalDashboard = () => {
     courseCode: '',
     term: '',
   });
+  const [options, setOptions] = useState({
+    institutionOptions: [],
+    termOptions: [],
+  });
   const [courses, setCourses] = useState([]);
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    fetch('/api/professional/applications')
-      .then((response) => response.json())
-      .then((data) => setApplications(data))
-      .catch((error) => console.error('Error fetching applications:', error));
+    const institutionOptions = JSON.parse(localStorage.getItem('institutionOptions')) || [];
+    const termOptions = JSON.parse(localStorage.getItem('termOptions')) || [];
+
+    setOptions({
+      institutionOptions,
+      termOptions,
+    });
+
+    console.log('Loaded options:', { institutionOptions, termOptions });
+
+    handleSearch()
   }, []);
 
-  const handleSearch = () => {
-    const queryParams = new URLSearchParams(searchFilters).toString();
-    fetch(`/api/courses?${queryParams}`)
-      .then((response) => response.json())
-      .then((data) => setCourses(data))
-      .catch((error) => console.error('Error fetching courses:', error));
+  const handleSearch = async () => {
+    const response = await restfulGet('/professional/dashboard', searchFilters);
+    const res = await response.json();
+    console.log(res);
+    if (res.code === 0) {
+      setCourses(res.data.courses);
+      setApplications(res.data.applications);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -42,14 +56,22 @@ const ProfessionalDashboard = () => {
       <div className="bg-white p-4 rounded shadow-md mb-6">
         <h2 className="text-xl font-bold mb-4">Search Courses</h2>
         <div className="grid grid-cols-3 gap-4">
-          <input
-            type="text"
+          {/* Institution Dropdown */}
+          <select
             name="institution"
             value={searchFilters.institution}
             onChange={handleInputChange}
-            placeholder="Institution"
             className="border p-2 rounded"
-          />
+          >
+            <option value="">Select Institution</option>
+            {options.institutionOptions.map((option, index) => (
+              <option key={index} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          {/* Course Code Input */}
           <input
             type="text"
             name="courseCode"
@@ -58,14 +80,21 @@ const ProfessionalDashboard = () => {
             placeholder="Course Code"
             className="border p-2 rounded"
           />
-          <input
-            type="text"
+
+          {/* Term Dropdown */}
+          <select
             name="term"
             value={searchFilters.term}
             onChange={handleInputChange}
-            placeholder="Term (e.g., 24F)"
             className="border p-2 rounded"
-          />
+          >
+            <option value="">Select Term</option>
+            {options.termOptions.map((option, index) => (
+              <option key={index} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
         <button
           onClick={handleSearch}
@@ -81,11 +110,11 @@ const ProfessionalDashboard = () => {
           <ul>
             {courses.map((course) => (
               <li
-                key={course.CourseID}
-                onClick={() => handleCourseClick(course.CourseID)}
+                key={course.courseId}
+                onClick={() => handleCourseClick(course.courseId)}
                 className="cursor-pointer p-2 hover:bg-gray-100 border-b"
               >
-                {course.Title} - {course.Code}
+                {course.title} - {course.code} - {course.term}
               </li>
             ))}
           </ul>
@@ -96,8 +125,8 @@ const ProfessionalDashboard = () => {
         <h2 className="text-xl font-bold mb-4">My Applications</h2>
         <ul>
           {applications.map((app) => (
-            <li key={app.ApplicationID} className="p-2 border-b">
-              {app.CourseTitle} - {app.Status}
+            <li key={app.applicationID} className="p-2 border-b">
+              {app.courseTitle} - {app.status}
             </li>
           ))}
         </ul>
