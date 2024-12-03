@@ -1,17 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { restfulGet } from '../../request/request';
 
 const ProfessionalCourseInfo = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const [courseDetails, setCourseDetails] = useState(null);
+  const [courseDetails, setCourseDetails] = useState({});
   const [applicationStatus, setApplicationStatus] = useState('');
 
   useEffect(() => {
-    fetch(`/api/courses/${courseId}`)
-      .then((response) => response.json())
-      .then((data) => setCourseDetails(data))
-      .catch((error) => console.error('Error fetching course details:', error));
+    const getCourseInfo = async () => {
+      try {
+        const response = await restfulGet('/getCourseDetail', {courseId});
+        const res = await response.json();
+        if (res.code === 0) {
+          console.log(res);
+          
+          setCourseDetails(res.data.courseDetails);
+          setApplicationStatus(res.data.applicationStatus);
+        }
+      } catch (error) {
+        console.error('Error fetching course details:', error);
+      }
+    };
+
+    getCourseInfo();
   }, [courseId]);
 
   const handleApply = () => {
@@ -37,23 +50,25 @@ const ProfessionalCourseInfo = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        Course Details: {courseDetails.Title}
+        Course Details: {courseDetails.title}
       </h1>
       <div className="bg-white p-4 rounded shadow-md">
-        <p><strong>Code:</strong> {courseDetails.Code}</p>
-        <p><strong>Term:</strong> {courseDetails.TermName}</p>
-        <p><strong>Schedule:</strong> {courseDetails.Schedule}</p>
-        <p><strong>Delivery Method:</strong> {courseDetails.DeliveryMethod}</p>
-        <p><strong>Compensation:</strong> ${courseDetails.Compensation}</p>
-        <p><strong>Preferred Qualifications:</strong> {courseDetails.PreferredQualifications}</p>
-        <p><strong>Outline:</strong> {courseDetails.Outline}</p>
+        <p><strong>Code:</strong> {courseDetails.code}</p>
+        <p><strong>Term:</strong> {courseDetails.termName}</p>
+        <p><strong>Schedule:</strong> {courseDetails.schedule}</p>
+        <p><strong>Delivery Method:</strong> {courseDetails.deliveryMethod}</p>
+        <p><strong>Compensation:</strong> ${courseDetails.compensation}</p>
+        <p><strong>Preferred Qualifications:</strong> {courseDetails.preferredQualifications}</p>
+        <p><strong>Outline:</strong> {courseDetails.outline}</p>
       </div>
-      <button
-        onClick={handleApply}
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Apply to Teach
-      </button>
+      {(applicationStatus == "") && (
+        <button
+          onClick={handleApply}
+          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Apply to Teach
+        </button>
+      )}&nbsp;&nbsp;
       {applicationStatus && (
         <p className="mt-4 text-green-500">{applicationStatus}</p>
       )}
