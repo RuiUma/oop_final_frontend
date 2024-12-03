@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { restfulGet } from '../../request/request';
+import { restfulGet, restfulPost } from '../../request/request';
 
 const ProfessionalCourseInfo = () => {
   const { courseId } = useParams();
@@ -8,39 +8,37 @@ const ProfessionalCourseInfo = () => {
   const [courseDetails, setCourseDetails] = useState({});
   const [applicationStatus, setApplicationStatus] = useState('');
 
-  useEffect(() => {
-    const getCourseInfo = async () => {
-      try {
-        const response = await restfulGet('/getCourseDetail', {courseId});
-        const res = await response.json();
-        if (res.code === 0) {
-          console.log(res);
-          
-          setCourseDetails(res.data.courseDetails);
-          setApplicationStatus(res.data.applicationStatus);
-        }
-      } catch (error) {
-        console.error('Error fetching course details:', error);
+  const getCourseInfo = async () => {
+    try {
+      const response = await restfulGet('/CourseDetail', {courseId});
+      const res = await response.json();
+      if (res.code === 0) {
+        console.log(res);
+        
+        setCourseDetails(res.data.courseDetails);
+        setApplicationStatus(res.data.applicationStatus);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching course details:', error);
+    }
+  };
+  
+  useEffect(() => {
+    
 
     getCourseInfo();
   }, [courseId]);
 
-  const handleApply = () => {
-    fetch(`/api/applications`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ courseId }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setApplicationStatus('Application submitted successfully!');
-        } else {
-          setApplicationStatus('Failed to submit application.');
-        }
-      })
-      .catch((error) => console.error('Error submitting application:', error));
+  const handleApply = async () => {
+    const response = await restfulPost('/professional/apply', {courseId});
+    const res = await response.json();
+    console.log(res);
+    if (res.code === 0) {
+      getCourseInfo()
+
+    } else {
+      setApplicationStatus('Apply failed');
+    }
   };
 
   if (!courseDetails) {
