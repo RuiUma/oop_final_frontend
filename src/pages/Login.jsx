@@ -31,9 +31,18 @@ const Login = () => {
     const response = await restfulPost('/login', { email, password })
     const res = await response.json()
     if(res.data.userType == "Professional") {
-      navigate("/professional/dashboard")
+      if(res.data.profileCreated == 0) {
+        navigate("/professional/profile")
+      } else {
+        navigate("/professional/dashboard")
+      }
+      
     } else {
-      navigate("/institution/dashboard")
+      if(res.data.profileCreated == 0) {
+        navigate("/institution/profile")
+      } else {
+        navigate("/institution/dashboard")
+      }
     }
   };
 
