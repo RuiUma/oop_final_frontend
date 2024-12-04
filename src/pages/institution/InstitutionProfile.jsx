@@ -1,14 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import { restfulPut, restfulGet } from '../../request/request';
 
 const InstitutionProfile = () => {
-  const [profile, setProfile] = useState({ Address: '' });
+  const [profile, setProfile] = useState({ address: '' });
   const [updateStatus, setUpdateStatus] = useState('');
 
   useEffect(() => {
-    fetch('/api/institution/profile')
-      .then((response) => response.json())
-      .then((data) => setProfile(data))
-      .catch((error) => console.error('Error fetching profile:', error));
+    const fetchData = async () => {
+      try {
+          const response = await restfulGet('/profile');
+          const res = await response.json();
+          console.log(res);
+          
+          if (res.code === 0) {
+              if (res.data.address === null) {
+                  setProfile({address: ''});
+                  return;
+              }
+              setProfile({address: res.data.address});
+          }          
+      } catch (error) {
+          console.error('Error fetching profile data:', error);
+      }
+  };
+
+  fetchData()
   }, []);
 
   const handleInputChange = (e) => {
@@ -16,20 +32,17 @@ const InstitutionProfile = () => {
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdate = () => {
-    fetch('/api/institution/profile', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(profile),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setUpdateStatus('Profile updated successfully!');
-        } else {
-          setUpdateStatus('Failed to update profile.');
-        }
-      })
-      .catch((error) => console.error('Error updating profile:', error));
+  const handleUpdate = async () => {
+    console.log(profile);
+    const response = await restfulPut('/profile', profile)
+    const res = await response.json();
+    console.log(res);
+    if (res.code !== 0) {
+      setUpdateStatus("Update Failed")
+      return;
+    }
+    setUpdateStatus("Update Successful")
+    
   };
 
   return (
@@ -39,8 +52,8 @@ const InstitutionProfile = () => {
         <div className="mb-4">
           <label className="block text-gray-700 font-bold">Address</label>
           <textarea
-            name="Address"
-            value={profile.Address}
+            name="address"
+            value={profile.address}
             onChange={handleInputChange}
             className="border p-2 rounded w-full"
           />
