@@ -7,11 +7,16 @@ const ProfessionalProfile = () => {
     currentPosition: '',
     educationBackground: '',
     areaOfExpertise: '',
-    institutionName: ''
+    institutionId: ''
   });
   const [updateStatus, setUpdateStatus] = useState('');
+  const [options, setOptions] = useState([]);
 
-  useEffect( () => {
+  useEffect(() => {
+
+    const institutionOptions = JSON.parse(localStorage.getItem('institutionOptions')) || [];
+
+    setOptions(institutionOptions);
 
     const fetchData = async () => {
         try {
@@ -21,10 +26,10 @@ const ProfessionalProfile = () => {
             
             if (res.code === 0) {
               const profileObj = {
-                currentPosition: res.data.currentPosition == null ? "" : res.data.currentPosition,
-                educationBackground: res.data.educationBackground == null ? "" : res.data.educationBackground,
-                areaOfExpertise: res.data.areaOfExpertise == null ? "" : res.data.areaOfExpertise,
-                institutionName: res.data.institutionName == null ? "" : res.data.institutionName
+                currentPosition: res.data.currentPosition ? "" : res.data.currentPosition,
+                educationBackground: res.data.educationBackground ? "" : res.data.educationBackground,
+                areaOfExpertise: res.data.areaOfExpertise ? "" : res.data.areaOfExpertise,
+                institutionId: res.data.institutionId ? "" : res.data.institutionId
               }
 
                 setProfile(profileObj);
@@ -46,6 +51,13 @@ const ProfessionalProfile = () => {
 
   const handleUpdate = async () => {
     console.log(profile);
+    const response = await restfulPut('/profile', profile)
+    const res = await response.json();
+    console.log(res);
+    if (res.code !== 0) {
+      setUpdateStatus("Update Failed")
+      return;
+    }
     setUpdateStatus("Update Successful")
     
   };
@@ -93,16 +105,19 @@ const ProfessionalProfile = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="institutionName">
-            Institution Name
-          </label>
-          <textarea
-            id="institutionName"
-            name="institutionName"
-            value={profile.institutionName}
+          <select
+            name="institution"
+            value={profile.institutionId}
             onChange={handleInputChange}
-            className="border p-2 rounded w-full"
-          />
+            className="border p-2 rounded"
+          >
+            <option value="">Select Institution</option>
+            {options.map((option, index) => (
+              <option key={index} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <button

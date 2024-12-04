@@ -1,5 +1,7 @@
+const baseUrl = 'http://localhost:5173/api';
+
 const restfulPost = async (url, data) => {
-    return fetch('api/' + url, {
+    return fetch(baseUrl + url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -13,13 +15,13 @@ const restfulGet = (url, data) => {
         url += '?' + new URLSearchParams(data).toString();
     }
     
-    return fetch('http://localhost:5173/api' + url, {
+    return fetch(baseUrl + url, {
         method: 'GET',
     })
 };
 
 const restfulPut = async (url, data) => {
-    return fetch('api/' + url, {
+    return fetch(baseUrl + url, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'

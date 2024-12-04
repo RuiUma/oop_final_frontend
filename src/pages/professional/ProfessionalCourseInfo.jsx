@@ -30,7 +30,7 @@ const ProfessionalCourseInfo = () => {
   }, [courseId]);
 
   const handleApply = async () => {
-    const response = await restfulPost('/professional/apply', {courseId});
+    const response = await restfulPost('/CourseDetail', {courseId});
     const res = await response.json();
     console.log(res);
     if (res.code === 0) {
