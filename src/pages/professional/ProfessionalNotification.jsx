@@ -7,7 +7,9 @@ const ProfessionalNotification = () => {
   const [notifications, setNotifications] = useState([]);
 
   const fetchNotifications = async () => {
-    restfulGet('/notification')
+    const response = await restfulGet('/notification')
+    const res = await response.json();
+    setNotifications(res.data);
   };
   useEffect(() => {
     fetchNotifications();

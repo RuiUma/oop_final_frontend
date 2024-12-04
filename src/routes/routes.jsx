@@ -12,6 +12,7 @@ import InstitutionDashboard from "../pages/institution/InstitutionDashboard";
 import InstitutionNotification from "../pages/institution/InstitutionNotification";
 import InstitutionProfile from "../pages/institution/InstitutionProfile";
 import InstitutionRequests from "../pages/institution/InstitutionRequests";
+import CreateCourse from "../pages/institution/CreateCourse";
 
 
 
@@ -60,17 +61,22 @@ const router = createBrowserRouter([
         element: <InstitutionDashboard />,
     },
     {
-        path: "/institution/course-info",
+        path: "/institution/courses/:courseId",
         element: <InstitutionCourseInfo />,
     },
     {
-        path: "/institution/notification",
+        path: "/institution/notifications",
         element: <InstitutionNotification />,
     },
     {
         path: "/institution/requests",
         element: <InstitutionRequests />,
     },
+    {
+        path: "/institution/courses/new",
+        element: <CreateCourse />,
+    },
+    
     
  
   ]);

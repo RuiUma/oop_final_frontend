@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { restfulPost } from '../../request/request';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
   const [courseData, setCourseData] = useState({
-    Title: '',
-    Code: '',
-    Schedule: 'Morning',
-    DeliveryMethod: 'In-Person',
-    Compensation: '',
-    PreferredQualifications: '',
-    Outline: '',
-    TermID: '',
+    title: '',
+    code: '',
+    schedule: 'Morning',
+    deliveryMethod: 'In-Person',
+    compensation: '',
+    preferredQualifications: '',
+    outline: '',
+    termId: '',
   });
   const [terms, setTerms] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
-    fetch('/api/terms')
-      .then((response) => response.json())
-      .then((data) => setTerms(data))
-      .catch((error) => console.error('Error fetching terms:', error));
+    const termOptions = JSON.parse(localStorage.getItem('termOptions')) || [];
+    setTerms(termOptions);
   }, []);
 
   const handleInputChange = (e) => {
@@ -30,20 +29,19 @@ const CreateCourse = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch('/api/courses', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(courseData),
-    })
+    restfulPost('/course', courseData)
       .then((response) => {
         if (response.ok) {
           setStatusMessage('Course created successfully!');
-          setTimeout(() => navigate('/institution/dashboard'), 2000);
+          navigate('/institution/dashboard');
         } else {
           setStatusMessage('Failed to create course.');
         }
       })
-      .catch((error) => console.error('Error creating course:', error));
+      .catch((error) => {
+        console.error('Error creating course:', error);
+        setStatusMessage('Failed to create course.');
+      });
   };
 
   return (
@@ -57,8 +55,8 @@ const CreateCourse = () => {
           <label className="block text-gray-700 font-bold mb-1">Title</label>
           <input
             type="text"
-            name="Title"
-            value={courseData.Title}
+            name="title"
+            value={courseData.title}
             onChange={handleInputChange}
             placeholder="Course Title"
             className="border p-2 rounded w-full"
@@ -69,8 +67,8 @@ const CreateCourse = () => {
           <label className="block text-gray-700 font-bold mb-1">Code</label>
           <input
             type="text"
-            name="Code"
-            value={courseData.Code}
+            name="code"
+            value={courseData.code}
             onChange={handleInputChange}
             placeholder="Course Code"
             className="border p-2 rounded w-full"
@@ -80,8 +78,8 @@ const CreateCourse = () => {
         <div>
           <label className="block text-gray-700 font-bold mb-1">Schedule</label>
           <select
-            name="Schedule"
-            value={courseData.Schedule}
+            name="schedule"
+            value={courseData.schedule}
             onChange={handleInputChange}
             className="border p-2 rounded w-full"
           >
@@ -93,8 +91,8 @@ const CreateCourse = () => {
         <div>
           <label className="block text-gray-700 font-bold mb-1">Delivery Method</label>
           <select
-            name="DeliveryMethod"
-            value={courseData.DeliveryMethod}
+            name="deliveryMethod"
+            value={courseData.deliveryMethod}
             onChange={handleInputChange}
             className="border p-2 rounded w-full"
           >
@@ -107,8 +105,8 @@ const CreateCourse = () => {
           <label className="block text-gray-700 font-bold mb-1">Compensation</label>
           <input
             type="number"
-            name="Compensation"
-            value={courseData.Compensation}
+            name="compensation"
+            value={courseData.compensation}
             onChange={handleInputChange}
             placeholder="Compensation (e.g., 1000.00)"
             className="border p-2 rounded w-full"
@@ -118,8 +116,8 @@ const CreateCourse = () => {
         <div>
           <label className="block text-gray-700 font-bold mb-1">Preferred Qualifications</label>
           <textarea
-            name="PreferredQualifications"
-            value={courseData.PreferredQualifications}
+            name="preferredQualifications"
+            value={courseData.preferredQualifications}
             onChange={handleInputChange}
             placeholder="Preferred Qualifications"
             className="border p-2 rounded w-full"
@@ -128,8 +126,8 @@ const CreateCourse = () => {
         <div>
           <label className="block text-gray-700 font-bold mb-1">Outline</label>
           <textarea
-            name="Outline"
-            value={courseData.Outline}
+            name="outline"
+            value={courseData.outline}
             onChange={handleInputChange}
             placeholder="Course Outline"
             className="border p-2 rounded w-full"
@@ -138,16 +136,16 @@ const CreateCourse = () => {
         <div>
           <label className="block text-gray-700 font-bold mb-1">Term</label>
           <select
-            name="TermID"
-            value={courseData.TermID}
+            name="termId"
+            value={courseData.termId}
             onChange={handleInputChange}
             className="border p-2 rounded w-full"
             required
           >
-            <option value="">Select Term</option>
-            {terms.map((term) => (
-              <option key={term.TermID} value={term.TermID}>
-                {term.Name} ({term.StartDate} - {term.EndDate})
+            <option value="" disabled>Select Term</option>
+            {terms.map((option, index) => (
+              <option key={index} value={option.value}>
+                {option.label}
               </option>
             ))}
           </select>

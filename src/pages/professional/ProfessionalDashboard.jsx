@@ -75,7 +75,7 @@ const ProfessionalDashboard = () => {
             onChange={handleInputChange}
             className="border p-2 rounded"
           >
-            <option value="">Select Institution</option>
+            <option value="" disabled>Select Institution</option>
             {options.institutionOptions.map((option, index) => (
               <option key={index} value={option.value}>
                 {option.label}
@@ -100,7 +100,7 @@ const ProfessionalDashboard = () => {
             onChange={handleInputChange}
             className="border p-2 rounded"
           >
-            <option value="">Select Term</option>
+            <option value="" disabled>Select Term</option>
             {options.termOptions.map((option, index) => (
               <option key={index} value={option.value}>
                 {option.label}

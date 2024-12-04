@@ -111,7 +111,7 @@ const ProfessionalProfile = () => {
             onChange={handleInputChange}
             className="border p-2 rounded"
           >
-            <option value="">Select Institution</option>
+            <option value="" disabled>Select Institution</option>
             {options.map((option, index) => (
               <option key={index} value={option.value}>
                 {option.label}
