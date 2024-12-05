@@ -10,7 +10,7 @@ const ProfessionalCourseInfo = () => {
 
   const getCourseInfo = async () => {
     try {
-      const response = await restfulGet('/CourseDetail', {courseId});
+      const response = await restfulGet('/courseDetail', {courseId});
       const res = await response.json();
       if (res.code === 0) {
         console.log(res);
@@ -30,7 +30,7 @@ const ProfessionalCourseInfo = () => {
   }, [courseId]);
 
   const handleApply = async () => {
-    const response = await restfulPost('/CourseDetail', {courseId});
+    const response = await restfulPost('/request', {courseId});
     const res = await response.json();
     console.log(res);
     if (res.code === 0) {
@@ -59,14 +59,14 @@ const ProfessionalCourseInfo = () => {
         <p><strong>Preferred Qualifications:</strong> {courseDetails.preferredQualifications}</p>
         <p><strong>Outline:</strong> {courseDetails.outline}</p>
       </div>
-      {(applicationStatus == "") && (
+      {
         <button
           onClick={handleApply}
           className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Apply to Teach
         </button>
-      )}&nbsp;&nbsp;
+      }&nbsp;&nbsp;
       {applicationStatus && (
         <p className="mt-4 text-green-500">{applicationStatus}</p>
       )}

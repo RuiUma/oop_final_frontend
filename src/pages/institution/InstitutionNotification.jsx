@@ -9,6 +9,8 @@ const InstitutionNotification = () => {
   const fetchNotifications = async () => {
     const response = await restfulGet('/notification')
     const res = await response.json();
+    console.log(res);
+    
     setNotifications(res.data);
   };
   useEffect(() => {
